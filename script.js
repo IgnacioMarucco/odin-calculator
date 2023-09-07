@@ -67,13 +67,19 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
+  if (b === 0) {
+    alert("LMAO DON'T!");
+    clearCalculator();
+    return;
+  }
+
   return (a % b === 0) ? a / b : (a / b).toFixed(2);
 }
 
 // Function to save new operand
 function addNewOperand(value) {
   let newOperand = value;
-
+  
   if (operation.operator === null) {
     operation.firstOperand += newOperand;
   } else {
@@ -104,17 +110,19 @@ function addNewOperator(value) {
 // Function clear calculator
 function clearCalculator() {
   operation = {
-    firstOperand: '0',
+    firstOperand: '',
     secondOperand: '',
     operator: null,
     result: null,
   }
-  changeDisplay()
+  changeDisplay();
+  mainDisplay.textContent = '0';
 }
 
 function changeDisplay() {
   if (operation.operator === null) { //First Operand
     mainDisplay.textContent = operation.firstOperand;
+    secondaryDisplay.textContent = '';
   } else if (operation.operator !== null && operation.result === null) { //Second Operand, no result yet
     mainDisplay.textContent = operation.secondOperand;
     secondaryDisplay.textContent = operation.firstOperand + operation.operator
