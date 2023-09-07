@@ -1,11 +1,31 @@
 "use strict"; 
-// 
+// DOM
+const display = document.querySelector(".display");
+
+const numbersBtns = document.querySelectorAll("[data-operand]");
+numbersBtns.forEach(numberBtn => numberBtn.addEventListener("click", addNewOperand));
+
+const operatorsBtns = document.querySelectorAll("[data-operator]");
+operatorsBtns.forEach(operatorBtn => operatorBtn.addEventListener("click", addNewOperator));
+
+const equalBtn = document.querySelector("[data-equal]");
+equalBtn.addEventListener("click", () => {
+  operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
+  changeDisplay(operation["result"]);
+});
+
+const clearBtn = document.querySelector("[data-clear]");
+clearBtn.addEventListener('click', clearCalculator);
+
+// Object to store variables
 let operation = {
   firstOperand: '',
   secondOperand: '',
   operator: null,
   result: null,
 }
+
+// Main Function
 function operate(operator, firstOperand, secondOperand) {
   let result;
   switch (operator) {
@@ -28,7 +48,7 @@ function operate(operator, firstOperand, secondOperand) {
     default:
       return null;
   }
-  operation["result"] = result.toFixed(2);
+  operation["result"] = result;
 }
 
 // Basic Operations Functions
@@ -45,31 +65,19 @@ function multiply(a, b) {
 }
 
 function divide(a, b) {
-  return a / b;
+  return (a % b === 0) ? a / b : (a / b).toFixed(2);
 }
 
-// DOM
-const display = document.querySelector(".display");
-const numbersBtns = document.querySelectorAll("[data-operand]");
-numbersBtns.forEach(numberBtn => numberBtn.addEventListener("click", newOperand));
-const operatorsBtns = document.querySelectorAll("[data-operator]");
-operatorsBtns.forEach(operatorBtn => operatorBtn.addEventListener("click", addNewOperator));
-const equalBtn = document.querySelector("[data-equal]");
-equalBtn.addEventListener("click", () => {
-  operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
-  changeDisplay(operation["result"]);
-});
+
 
 // Function to save new Number
-function newOperand(e) {
-  console.log(e.target.textContent);
-
-  
+function addNewOperand(e) {
+  let newOperand = e.target.attributes["data-operand"].value;
   if (operation["operator"] === null) {
-    operation["firstOperand"] += e.target.textContent;
+    operation["firstOperand"] += newOperand;
     changeDisplay(operation["firstOperand"])
   } else {
-    operation["secondOperand"] += e.target.textContent;
+    operation["secondOperand"] += newOperand;
     changeDisplay(operation["secondOperand"])
   }
 }
@@ -90,4 +98,16 @@ function addNewOperator(e) {
 // Function to change display
 function changeDisplay(element) {
   display.textContent = element;
+}
+
+// Function clear calculator
+function clearCalculator() {
+  operation = {
+    firstOperand: '',
+    secondOperand: '',
+    operator: null,
+    result: null,
+  }
+
+  changeDisplay(0);
 }
