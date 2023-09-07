@@ -5,12 +5,14 @@ const secondaryDisplay = document.querySelector(".secondary-display");
 
 const numbersBtns = document.querySelectorAll("[data-operand]");
 numbersBtns.forEach(numberBtn => numberBtn.addEventListener("click", (e) => {
-  addNewOperand(e.target.attributes["data-operand"].value)
+  addNewOperand(e.target.attributes["data-operand"].value);
+  changeDisplay();
 }));
 
 const operatorsBtns = document.querySelectorAll("[data-operator]");
 operatorsBtns.forEach(operatorBtn => operatorBtn.addEventListener("click", (e) => {
   addNewOperator(e.target.attributes["data-operator"].value);
+  changeDisplay();
 }));
 
 const clearBtn = document.querySelector("[data-clear]");
@@ -47,7 +49,7 @@ function operate(operator, firstOperand, secondOperand) {
     default:
       return null;
   }
-  operation["result"] = result;
+  operation.result = result;
   changeDisplay();
 }
 
@@ -72,12 +74,12 @@ function divide(a, b) {
 function addNewOperand(value) {
   let newOperand = value;
 
-  if (operation["operator"] === null) {
-    operation["firstOperand"] += newOperand;
+  if (operation.operator === null) {
+    operation.firstOperand += newOperand;
   } else {
-    operation["secondOperand"] += newOperand;
+    operation.secondOperand += newOperand;
+    operation.result = null;
   }
-  console.log(operation);
   changeDisplay();
 }
 
@@ -85,18 +87,18 @@ function addNewOperand(value) {
 function addNewOperator(value) {
   let newOperator =  value;
 
-  if (newOperator === "=") {
+  if (newOperator !== "=" && operation.operator === null) {
+    operation.operator = newOperator;
+  } else if (newOperator !== "=" && operation.operator !== null) {
     operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
-    return;
-  } else if (operation["operator"] !== null) { // If its not the first operator, do the math and move operands to keep chaining operands.
+    // Switch operand with result to chain operations. Then add new operator for the next operation.
+    operation.firstOperand = operation.result;
+    operation.secondOperand = '';
+    operation.operator = newOperator;
+  } else {
+    // New operator is equal, just solve.
     operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
-
-    operation["firstOperand"] = operation["result"];
-    operation["secondOperand"] = '';
-    operation.result = null;
   }
-  operation["operator"] = newOperator;
-  changeDisplay()
 }
 
 // Function clear calculator
@@ -111,16 +113,15 @@ function clearCalculator() {
 }
 
 function changeDisplay() {
-  if (operation.result === null && !operation.secondOperand) {
+  if (operation.operator === null) { //First Operand
     mainDisplay.textContent = operation.firstOperand;
-    return;
-  } else if (operation.result === null && operation.operator) {
+  } else if (operation.operator !== null && operation.result === null) { //Second Operand, no result yet
     mainDisplay.textContent = operation.secondOperand;
-    secondaryDisplay.textContent = `${operation.firstOperand} ${operation.operator}`;
-    return;
+    secondaryDisplay.textContent = operation.firstOperand + operation.operator
+  } else if (operation.result !== null) {  //Result obtained
+    mainDisplay.textContent = operation.result;
+    secondaryDisplay.textContent = operation.firstOperand + operation.operator + operation.secondOperand;
   }
-  secondaryDisplay.textContent = `${operation.firstOperand} ${operation.operator} ${operation.secondOperand} =`;
-  mainDisplay.textContent = operation.result;
 }
 
 // Keyboard
@@ -129,7 +130,6 @@ window.addEventListener('keydown', function (e) {
   if (e.key === "Enter") {
     key = "=";
   }
-  console.log(key)
   if (key >= 0 && key <= 9) {
     addNewOperand(key)
   } else if (key === '+' || key === '-' || key === '*' || key === '/' || key === '=') {
