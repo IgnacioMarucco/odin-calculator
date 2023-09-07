@@ -1,18 +1,13 @@
 "use strict"; 
 // DOM
-const display = document.querySelector(".display");
+const mainDisplay = document.querySelector(".main-display");
+const secondaryDisplay = document.querySelector(".secondary-display");
 
 const numbersBtns = document.querySelectorAll("[data-operand]");
 numbersBtns.forEach(numberBtn => numberBtn.addEventListener("click", addNewOperand));
 
 const operatorsBtns = document.querySelectorAll("[data-operator]");
 operatorsBtns.forEach(operatorBtn => operatorBtn.addEventListener("click", addNewOperator));
-
-const equalBtn = document.querySelector("[data-equal]");
-equalBtn.addEventListener("click", () => {
-  operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
-  changeDisplay(operation["result"]);
-});
 
 const clearBtn = document.querySelector("[data-clear]");
 clearBtn.addEventListener('click', clearCalculator);
@@ -49,6 +44,7 @@ function operate(operator, firstOperand, secondOperand) {
       return null;
   }
   operation["result"] = result;
+  changeDisplay();
 }
 
 // Basic Operations Functions
@@ -68,46 +64,57 @@ function divide(a, b) {
   return (a % b === 0) ? a / b : (a / b).toFixed(2);
 }
 
-
-
-// Function to save new Number
+// Function to save new operand
 function addNewOperand(e) {
   let newOperand = e.target.attributes["data-operand"].value;
+
   if (operation["operator"] === null) {
     operation["firstOperand"] += newOperand;
-    changeDisplay(operation["firstOperand"])
   } else {
     operation["secondOperand"] += newOperand;
-    changeDisplay(operation["secondOperand"])
   }
+  console.log(operation);
+  changeDisplay();
 }
 
 // Function to save new operator
 function addNewOperator(e) {
   let newOperator =  e.target.attributes["data-operator"].value;
-  if (operation["operator"] !== null) {
+
+  if (newOperator === "=") {
     operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
-    changeDisplay(operation["result"]);
+    return;
+  } else if (operation["operator"] !== null) { // If its not the first operator, do the math and move operands to keep chaining operands.
+    operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
 
     operation["firstOperand"] = operation["result"];
     operation["secondOperand"] = '';
+    operation.result = null;
   }
   operation["operator"] = newOperator;
-}
-
-// Function to change display
-function changeDisplay(element) {
-  display.textContent = element;
+  changeDisplay()
 }
 
 // Function clear calculator
 function clearCalculator() {
   operation = {
-    firstOperand: '',
+    firstOperand: '0',
     secondOperand: '',
     operator: null,
     result: null,
   }
+  changeDisplay()
+}
 
-  changeDisplay(0);
+function changeDisplay() {
+  if (operation.result === null && !operation.secondOperand) {
+    mainDisplay.textContent = operation.firstOperand;
+    return;
+  } else if (operation.result === null && operation.operator) {
+    mainDisplay.textContent = operation.secondOperand;
+    secondaryDisplay.textContent = `${operation.firstOperand} ${operation.operator}`;
+    return;
+  }
+  secondaryDisplay.textContent = `${operation.firstOperand} ${operation.operator} ${operation.secondOperand} =`;
+  mainDisplay.textContent = operation.result;
 }
