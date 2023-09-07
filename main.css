@@ -2,6 +2,8 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  font-size: 1.3rem;
 }
 
 body {
@@ -11,10 +13,10 @@ body {
   align-items: center;
 }
 .calc-container {
-  width: 500px;
+  width: 400px;
 }
 .calc-container__display{
-  width: 500px;
+  width: 400px;
   padding: 10px;
   background-color: #a9b1d6;
   border: solid 5px #414868;
