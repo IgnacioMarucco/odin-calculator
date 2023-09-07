@@ -28,7 +28,7 @@ function operate(operator, firstOperand, secondOperand) {
     default:
       return null;
   }
-  operation["result"] = result;
+  operation["result"] = result.toFixed(2);
 }
 
 // Basic Operations Functions
@@ -50,19 +50,21 @@ function divide(a, b) {
 
 // DOM
 const display = document.querySelector(".display");
-const numbersBtns = document.querySelectorAll("[data-number]");
-numbersBtns.forEach(numberBtn => numberBtn.addEventListener("click", newNumber));
+const numbersBtns = document.querySelectorAll("[data-operand]");
+numbersBtns.forEach(numberBtn => numberBtn.addEventListener("click", newOperand));
 const operatorsBtns = document.querySelectorAll("[data-operator]");
-operatorsBtns.forEach(operatorBtn => operatorBtn.addEventListener("click", newOperator));
+operatorsBtns.forEach(operatorBtn => operatorBtn.addEventListener("click", addNewOperator));
 const equalBtn = document.querySelector("[data-equal]");
 equalBtn.addEventListener("click", () => {
   operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
   changeDisplay(operation["result"]);
 });
 
-// Function to Save Number
-function newNumber(e) {
+// Function to save new Number
+function newOperand(e) {
   console.log(e.target.textContent);
+
+  
   if (operation["operator"] === null) {
     operation["firstOperand"] += e.target.textContent;
     changeDisplay(operation["firstOperand"])
@@ -72,9 +74,9 @@ function newNumber(e) {
   }
 }
 
-// Function to Save Operator
-function newOperator(e) {
-  console.log(e.target.textContent);
+// Function to save new operator
+function addNewOperator(e) {
+  let newOperator =  e.target.attributes["data-operator"].value;
   if (operation["operator"] !== null) {
     operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
     changeDisplay(operation["result"]);
@@ -82,10 +84,7 @@ function newOperator(e) {
     operation["firstOperand"] = operation["result"];
     operation["secondOperand"] = '';
   }
-  
-  operation["operator"] = e.target.textContent;
-
-
+  operation["operator"] = newOperator;
 }
 
 // Function to change display
