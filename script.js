@@ -4,10 +4,14 @@ const mainDisplay = document.querySelector(".main-display");
 const secondaryDisplay = document.querySelector(".secondary-display");
 
 const numbersBtns = document.querySelectorAll("[data-operand]");
-numbersBtns.forEach(numberBtn => numberBtn.addEventListener("click", addNewOperand));
+numbersBtns.forEach(numberBtn => numberBtn.addEventListener("click", (e) => {
+  addNewOperand(e.target.attributes["data-operand"].value)
+}));
 
 const operatorsBtns = document.querySelectorAll("[data-operator]");
-operatorsBtns.forEach(operatorBtn => operatorBtn.addEventListener("click", addNewOperator));
+operatorsBtns.forEach(operatorBtn => operatorBtn.addEventListener("click", (e) => {
+  addNewOperator(e.target.attributes["data-operator"].value);
+}));
 
 const clearBtn = document.querySelector("[data-clear]");
 clearBtn.addEventListener('click', clearCalculator);
@@ -65,8 +69,8 @@ function divide(a, b) {
 }
 
 // Function to save new operand
-function addNewOperand(e) {
-  let newOperand = e.target.attributes["data-operand"].value;
+function addNewOperand(value) {
+  let newOperand = value;
 
   if (operation["operator"] === null) {
     operation["firstOperand"] += newOperand;
@@ -78,8 +82,8 @@ function addNewOperand(e) {
 }
 
 // Function to save new operator
-function addNewOperator(e) {
-  let newOperator =  e.target.attributes["data-operator"].value;
+function addNewOperator(value) {
+  let newOperator =  value;
 
   if (newOperator === "=") {
     operate(operation.operator, +operation.firstOperand, +operation.secondOperand);
@@ -118,3 +122,17 @@ function changeDisplay() {
   secondaryDisplay.textContent = `${operation.firstOperand} ${operation.operator} ${operation.secondOperand} =`;
   mainDisplay.textContent = operation.result;
 }
+
+// Keyboard
+window.addEventListener('keydown', function (e) {
+  let key = e.key;
+  if (e.key === "Enter") {
+    key = "=";
+  }
+  console.log(key)
+  if (key >= 0 && key <= 9) {
+    addNewOperand(key)
+  } else if (key === '+' || key === '-' || key === '*' || key === '/' || key === '=') {
+    addNewOperator(key);
+  }
+});
