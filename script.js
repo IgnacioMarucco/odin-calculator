@@ -49,7 +49,7 @@ function operate(operator, firstOperand, secondOperand) {
     default:
       return null;
   }
-  operation.result = result;
+  operation.result = result % 1 === 0 ? result : result.toFixed(2);  
   changeDisplay();
 }
 
@@ -72,14 +72,18 @@ function divide(a, b) {
     clearCalculator();
     return;
   }
-
-  return (a % b === 0) ? a / b : (a / b).toFixed(2);
+  return a / b;
 }
 
 // Function to save new operand
 function addNewOperand(value) {
   let newOperand = value;
-  
+  let operandToModify = whichOperand();
+  // Check so user can't add more than one decimal separator
+  if (newOperand === "." && hasDecimalSeparator(operandToModify)){ 
+    return;
+  }
+
   if (operation.operator === null) {
     operation.firstOperand += newOperand;
   } else {
@@ -132,13 +136,27 @@ function changeDisplay() {
   }
 }
 
+// Function to check if a number has a decimal separator
+function hasDecimalSeparator(number) {
+  return (number.split('').some((element) => element === "."));
+}
+
+// Function to choose which operand to modify
+function whichOperand() {
+  if (operation.operator === null) {
+    return operation.firstOperand;
+  } else {
+    return operation.secondOperand;
+  }
+}
+
 // Keyboard
 window.addEventListener('keydown', function (e) {
   let key = e.key;
   if (e.key === "Enter") {
     key = "=";
   }
-  if (key >= 0 && key <= 9) {
+  if (key >= 0 && key <= 9 || key === ".") {
     addNewOperand(key)
   } else if (key === '+' || key === '-' || key === '*' || key === '/' || key === '=') {
     addNewOperator(key);
